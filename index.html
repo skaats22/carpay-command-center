@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carpay Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-dark: #0a0e17;
+      --bg-card: #131722;
+      --bg-card-hover: #1a1f2e;
+      --text-primary: #e4e9f2;
+      --text-secondary: #8891a8;
+      --text-muted: #5c6577;
+      --border: #1e2433;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-yellow: #f59e0b;
+      --accent-purple: #8b5cf6;
+      --accent-cyan: #06b6d4;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .container { position: relative; z-index: 1; }
+
+    /* SINGLE SOURCE OF TRUTH FOR PAGE WIDTH */
+    
+
+    .header {
+      padding: 24px 40px;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      background: rgba(10, 14, 23, 0.8);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-section { display: flex; align-items: center; gap: 20px; }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      color: white;
+      font-size: 20px;
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .product-name {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-actions { display: flex; gap: 12px; align-items: center; }
+
+    .time-selector {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-card);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .time-btn {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .time-btn.active { background: var(--accent-blue); color: white; }
+
+    .time-btn:hover:not(.active) {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+
+    .btn-icon {
+      padding: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-icon:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+      border-color: var(--accent-blue);
+    }
+
+    .main-content {
+      padding: 32px 40px 120px; /* real bottom breathing room */
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .page-header {
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 32px;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 900;
+      margin-bottom: 8px;
+      letter-spacing: -1px;
+    }
+
+    .page-subtitle { color: var(--text-secondary); font-size: 15px; }
+
+    /* Hero Stats */
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 48px;
+      grid-auto-rows: 1fr;
+      width: 100%;
+    }
+
+    .hero-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+    }
+
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-color), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .hero-card:hover {
+      border-color: var(--accent-color);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-card:hover::before { opacity: 1; }
+
+    .hero-card.blue { --accent-color: var(--accent-blue); }
+    .hero-card.green { --accent-color: var(--accent-green); }
+    .hero-card.yellow { --accent-color: var(--accent-yellow); }
+    .hero-card.purple { --accent-color: var(--accent-purple); }
+    .hero-card.red { --accent-color: var(--accent-red); }
+
+    .hero-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hero-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: rgba(255, 255, 255, 0.05);
+      flex-shrink: 0;
+    }
+
+    .hero-card.blue .hero-icon { background: rgba(59, 130, 246, 0.15); }
+    .hero-card.green .hero-icon { background: rgba(16, 185, 129, 0.15); }
+    .hero-card.yellow .hero-icon { background: rgba(245, 158, 11, 0.15); }
+    .hero-card.purple .hero-icon { background: rgba(139, 92, 246, 0.15); }
+    .hero-card.red .hero-icon { background: rgba(239, 68, 68, 0.15); }
+
+    .hero-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: rgba(228, 233, 242, 0.82);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .hero-value {
+      font-size: 36px;
+      font-weight: 900;
+      font-family: 'Space Mono', monospace;
+      line-height: 1;
+      letter-spacing: -1.5px;
+      color: var(--text-primary);
+    }
+
+    .hero-change {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      row-gap: 8px;
+      flex-wrap: wrap;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .hero-footnote {
+      margin-top: auto;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .trend-indicator {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .trend-indicator.up { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+    .trend-indicator.down { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+    .trend-indicator.neutral { background: rgba(245, 158, 11, 0.15); color: var(--accent-yellow); }
+
+    /* Charts */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+      margin-bottom: 48px;
+      width: 100%;
+    }
+
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .chart-card:hover {
+      border-color: var(--accent-blue);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ALWAYS STACKED */
+    .chart-card.span-6 { grid-column: span 12; }
+    .chart-card.span-12 { grid-column: span 12; }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chart-badge {
+      padding: 4px 10px;
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--accent-blue);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-radius: 6px;
+    }
+
+    .chart-badge.success { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+
+    .chart-meta { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    .chart-container { position: relative; height: 280px; }
+
+    /* Aging Snapshot */
+    .aging-hero-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+
+    .aging-hero-total { text-align: right; }
+
+    .aging-hero-total-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .aging-hero-total-value {
+      font-size: 36px;
+      font-weight: 900;
+      font-family: 'Space Mono', monospace;
+      color: var(--accent-red);
+      line-height: 1;
+      margin-top: 4px;
+    }
+
+    .aging-buckets { display: grid; gap: 12px; }
+
+    .aging-bucket {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .aging-bucket:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: #3b82f6;
+      transform: translateX(4px);
+    }
+
+    .aging-bucket-color {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .aging-bucket-info { flex: 1; }
+
+    .aging-bucket-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+
+    .aging-bucket-value {
+      font-size: 24px;
+      font-weight: 900;
+      font-family: 'Space Mono', monospace;
+      line-height: 1;
+    }
+
+    .aging-bucket-percentage { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    .aging-bucket-trend {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .aging-bucket-trend.trend-up { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+    .aging-bucket-trend.trend-down { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+
+    /* AI Metrics */
+    .ai-metrics-section {
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 2px solid var(--border);
+      width: 100%;
+    }
+
+    .section-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+    .section-subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
+
+    .ai-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      grid-auto-rows: 1fr;
+      align-items: stretch;
+      width: 100%;
+    }
+
+    .ai-metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .ai-metric-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); }
+
+    .ai-metric-icon { font-size: 32px; margin-bottom: 12px; }
+
+    .ai-metric-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .ai-metric-value {
+      font-size: 42px;
+      font-weight: 900;
+      font-family: 'Space Mono', monospace;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .ai-metric-detail { font-size: 13px; color: var(--text-muted); }
+
+    /* ================================
+       RESPONSIVE
+       ================================ */
+
+    /* 900–1199px: 3 columns; center the last row (2 cards) */
+    @media (min-width: 900px) and (max-width: 1199px) {
+      .hero-stats { grid-template-columns: repeat(3, 1fr); }
+      .hero-stats > :nth-child(7) { grid-column: 2; }
+      .hero-stats > :nth-child(8) { grid-column: 3; }
+    }
+
+    /* tablet */
+    @media (max-width: 899px) {
+      .hero-stats { grid-template-columns: repeat(2, 1fr); }
+      .ai-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* mobile */
+    @media (max-width: 599px) {
+      .hero-stats { grid-template-columns: 1fr; }
+      .ai-metrics-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Mobile polish */
+    @media (max-width: 768px) {
+      .header {
+        padding: 16px 20px;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .main-content {
+        padding: 24px 20px 120px;
+        max-width: 100%;
+      }
+
+      .chart-card { padding: 18px; }
+      .chart-container { height: 220px; }
+
+      .aging-bucket {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .aging-bucket-trend { align-self: flex-end; }
+    }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-inner">
+      <div class="logo-section">
+        <div class="logo">
+          <div class="logo-icon">C</div>
+          <div>Carpay <span class="product-name">Command Center</span></div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="time-selector">
+          <button class="time-btn">7D</button>
+          <button class="time-btn active">30D</button>
+          <button class="time-btn">90D</button>
+          <button class="time-btn">YTD</button>
+        </div>
+        <button class="btn-icon" aria-label="Reports">📊</button>
+        <button class="btn-icon" aria-label="Settings">⚙️</button>
+        <button class="btn-icon" aria-label="Account">👤</button>
+      </div>
+    </div>
+    </div>
+
+    <div class="main-content">
+      <div class="page-header">
+        <h1 class="page-title">Performance Overview</h1>
+        <p class="page-subtitle">Real-time insights across all dealership operations • Last updated 5 minutes ago</p>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-card blue">
+          <div class="hero-card-header">
+            <div class="hero-label">Monthly Revenue</div>
+            <div class="hero-icon">💰</div>
+          </div>
+          <div class="hero-value">$487K</div>
+          <div class="hero-change">
+            <span class="trend-indicator up">↑ 9.4%</span>
+            <span style="color: var(--text-muted);">vs last month</span>
+          </div>
+        </div>
+
+        <div class="hero-card purple">
+          <div class="hero-card-header">
+            <div class="hero-label">Monthly Gross Profit</div>
+            <div class="hero-icon">📈</div>
+          </div>
+          <div class="hero-value">$118K</div>
+          <div class="hero-change">
+            <span class="trend-indicator neutral">24.2%</span>
+            <span style="color: var(--text-muted);">gross margin</span>
+          </div>
+        </div>
+
+        <div class="hero-card green">
+          <div class="hero-card-header">
+            <div class="hero-label">Collection Rate</div>
+            <div class="hero-icon">✓</div>
+          </div>
+          <div class="hero-value">94.2%</div>
+          <div class="hero-change">
+            <span class="trend-indicator up">↑ 2.1%</span>
+            <span style="color: var(--text-muted);">vs last month</span>
+          </div>
+        </div>
+
+        <div class="hero-card yellow">
+          <div class="hero-card-header">
+            <div class="hero-label">Active Portfolio</div>
+            <div class="hero-icon">📊</div>
+          </div>
+          <div class="hero-value">$14.2M</div>
+          <div class="hero-change">
+            <span class="trend-indicator up">↑ $1.1M</span>
+            <span style="color: var(--text-muted);">vs last month</span>
+          </div>
+        </div>
+
+        <div class="hero-card blue">
+          <div class="hero-card-header">
+            <div class="hero-label">Days to Recover</div>
+            <div class="hero-icon">⏱️</div>
+          </div>
+          <div class="hero-value">8.4 Days</div>
+          <div class="hero-change">
+            <span class="trend-indicator up">↓ 1.2 days</span>
+            <span style="color: var(--text-muted);">improving</span>
+          </div>
+        </div>
+
+        <div class="hero-card green">
+          <div class="hero-card-header">
+            <div class="hero-label">1st Payment Success</div>
+            <div class="hero-icon">🎯</div>
+          </div>
+          <div class="hero-value">89.3%</div>
+          <div class="hero-change">
+            <span class="trend-indicator up">↑ 3.2%</span>
+            <span style="color: var(--text-muted);">vs last month</span>
+          </div>
+        </div>
+
+        <div class="hero-card purple">
+          <div class="hero-card-header">
+            <div class="hero-label">Monthly Vehicles Sold</div>
+            <div class="hero-icon">🚗</div>
+          </div>
+          <div class="hero-value">312 Vehicles</div>
+          <div class="hero-change">
+            <span class="trend-indicator up">↑ 7.1%</span>
+            <span style="color: var(--text-muted);">vs last month</span>
+          </div>
+        </div>
+
+        <div class="hero-card red" title="Track card fees over time. Want to lower this? Email steve.k@carpay.com">
+          <div class="hero-card-header">
+            <div class="hero-label">Monthly Card Processing Fees</div>
+            <div class="hero-icon">💳</div>
+          </div>
+          <div class="hero-value">-$82.5K</div>
+          <div class="hero-change">
+            <span class="trend-indicator neutral">2.34%</span>
+            <span style="color: var(--text-muted);">blended processing rate</span>
+          </div>
+          <div class="hero-footnote">Want to lower this? Email steve.k@carpay.com</div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card span-6">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Payments Due vs Collected <span class="chart-badge success">On Track</span></div>
+              <div class="chart-meta">Last 3 months • Dollar amounts inside bars, collection % above</div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="paymentsChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card span-6">
+          <div class="aging-hero-header">
+            <div>
+              <div class="chart-title">Delinquent Balance by Age</div>
+              <div class="chart-meta">As of January 27, 2026</div>
+            </div>
+            <div class="aging-hero-total">
+              <div class="aging-hero-total-label">Total Past Due</div>
+              <div class="aging-hero-total-value">$99.5K</div>
+            </div>
+          </div>
+
+          <div class="aging-buckets">
+            <div class="aging-bucket">
+              <div class="aging-bucket-color" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">🔵</div>
+              <div class="aging-bucket-info">
+                <div class="aging-bucket-label">1-7 days late</div>
+                <div class="aging-bucket-value" style="color: #3b82f6;">$35.0K</div>
+                <div class="aging-bucket-percentage">35.2% of total delinquent</div>
+              </div>
+              <div class="aging-bucket-trend trend-down">↓ $3K</div>
+            </div>
+
+            <div class="aging-bucket">
+              <div class="aging-bucket-color" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6;">🟣</div>
+              <div class="aging-bucket-info">
+                <div class="aging-bucket-label">8-15 days late</div>
+                <div class="aging-bucket-value" style="color: #8b5cf6;">$24.0K</div>
+                <div class="aging-bucket-percentage">24.1% of total delinquent</div>
+              </div>
+              <div class="aging-bucket-trend trend-down">↓ $4K</div>
+            </div>
+
+            <div class="aging-bucket">
+              <div class="aging-bucket-color" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">🟡</div>
+              <div class="aging-bucket-info">
+                <div class="aging-bucket-label">16-30 days late</div>
+                <div class="aging-bucket-value" style="color: #f59e0b;">$28.0K</div>
+                <div class="aging-bucket-percentage">28.1% of total delinquent</div>
+              </div>
+              <div class="aging-bucket-trend trend-up">↑ $4K</div>
+            </div>
+
+            <div class="aging-bucket">
+              <div class="aging-bucket-color" style="background: rgba(249, 115, 22, 0.15); color: #f97316;">🟠</div>
+              <div class="aging-bucket-info">
+                <div class="aging-bucket-label">31-60 days late</div>
+                <div class="aging-bucket-value" style="color: #f97316;">$7.0K</div>
+                <div class="aging-bucket-percentage">7.0% of total delinquent</div>
+              </div>
+              <div class="aging-bucket-trend trend-down">↓ $1K</div>
+            </div>
+
+            <div class="aging-bucket">
+              <div class="aging-bucket-color" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;">🔴</div>
+              <div class="aging-bucket-info">
+                <div class="aging-bucket-label">61+ days late</div>
+                <div class="aging-bucket-value" style="color: #ef4444;">$5.5K</div>
+                <div class="aging-bucket-percentage">5.5% of total delinquent</div>
+              </div>
+              <div class="aging-bucket-trend trend-down">↓ $0.5K</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-metrics-section">
+        <div class="section-title">Carpay Collect Impact</div>
+        <div class="section-subtitle">AI automation proving ROI on your Collect subscription</div>
+
+        <div class="ai-metrics-grid">
+          <div class="ai-metric-card">
+            <div class="ai-metric-icon">🤖</div>
+            <div class="ai-metric-label">AI Recovered (This Month)</div>
+            <div class="ai-metric-value" style="color: var(--accent-green);">$330K</div>
+            <div class="ai-metric-detail">68% of total recovery</div>
+          </div>
+
+          <div class="ai-metric-card">
+            <div class="ai-metric-icon">👤</div>
+            <div class="ai-metric-label">Manual Recovered</div>
+            <div class="ai-metric-value" style="color: var(--accent-blue);">$157K</div>
+            <div class="ai-metric-detail">32% of total recovery</div>
+          </div>
+
+          <div class="ai-metric-card">
+            <div class="ai-metric-icon">⏱️</div>
+            <div class="ai-metric-label">Collector Hours Saved</div>
+            <div class="ai-metric-value" style="color: var(--accent-purple);">142</div>
+            <div class="ai-metric-detail">This month</div>
+          </div>
+
+          <div class="ai-metric-card">
+            <div class="ai-metric-icon">✅</div>
+            <div class="ai-metric-label">AI-Only Resolved</div>
+            <div class="ai-metric-value" style="color: var(--accent-cyan);">847</div>
+            <div class="ai-metric-detail">Accounts recovered without human intervention</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Minimal runtime checks (acts like lightweight "tests" in the browser console).
+    function assert(condition, message) {
+      if (!condition) {
+        console.error('ASSERT FAILED:', message);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Guard against Chart.js not loading.
+      assert(typeof Chart !== 'undefined', 'Chart.js failed to load.');
+
+      // Ensure canvas exists before using it.
+      const canvas = document.getElementById('paymentsChart');
+      assert(!!canvas, 'paymentsChart canvas not found in DOM.');
+      if (!canvas || typeof Chart === 'undefined') return;
+
+      const paymentsCtx = canvas.getContext('2d');
+      assert(!!paymentsCtx, 'Could not get 2D context from paymentsChart.');
+      if (!paymentsCtx) return;
+
+      Chart.defaults.font.family = "'Inter', sans-serif";
+      Chart.defaults.font.size = 12;
+      Chart.defaults.color = '#8891a8';
+
+      const dueData = [450000, 465000, 480000];
+      const collectedData = [428000, 442000, 458000];
+
+      new Chart(paymentsCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Nov', 'Dec', 'Jan'],
+          datasets: [
+            {
+              label: 'Due',
+              data: dueData,
+              backgroundColor: 'rgba(59, 130, 246, 0.2)',
+              borderColor: '#3b82f6',
+              borderWidth: 2,
+              borderRadius: 8,
+            },
+            {
+              label: 'Collected',
+              data: collectedData,
+              backgroundColor: 'rgba(16, 185, 129, 0.8)',
+              borderColor: '#10b981',
+              borderWidth: 2,
+              borderRadius: 8,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              labels: { usePointStyle: true, padding: 20, color: '#e4e9f2' },
+            },
+            tooltip: {
+              backgroundColor: 'rgba(19, 23, 34, 0.95)',
+              padding: 12,
+              cornerRadius: 8,
+              titleColor: '#e4e9f2',
+              bodyColor: '#8891a8',
+              borderColor: '#1e2433',
+              borderWidth: 1,
+              callbacks: {
+                label: function (context) {
+                  return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+                },
+              },
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: {
+                callback: (value) => '$' + value / 1000 + 'K',
+              },
+            },
+            x: { grid: { display: false } },
+          },
+        },
+        plugins: [
+          {
+            afterDatasetsDraw: function (chart) {
+              const ctx = chart.ctx;
+              chart.data.datasets.forEach(function (dataset, i) {
+                const meta = chart.getDatasetMeta(i);
+                meta.data.forEach(function (bar, index) {
+                  const value = dataset.data[index];
+
+                  // $ inside bars
+                  ctx.fillStyle = '#e4e9f2';
+                  ctx.font = 'bold 13px Space Mono';
+                  ctx.textAlign = 'center';
+                  ctx.textBaseline = 'middle';
+                  ctx.fillText('$' + (value / 1000).toFixed(0) + 'K', bar.x, bar.y + bar.height / 2);
+
+                  // % above collected
+                  if (i === 1) {
+                    const rate = ((collectedData[index] / dueData[index]) * 100).toFixed(1);
+                    ctx.fillStyle = '#10b981';
+                    ctx.font = 'bold 12px Inter';
+                    ctx.fillText(rate + '%', bar.x, bar.y - 12);
+                  }
+                });
+              });
+            },
+          },
+        ],
+      });
+    });
+  </script>
+</body>
+</html>
