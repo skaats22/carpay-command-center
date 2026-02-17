@@ -527,7 +527,6 @@
 
       .aging-bucket-trend { align-self: flex-end; }
     }
-    }
   </style>
 </head>
 
@@ -559,10 +558,31 @@
     <div class="main-content">
       <div class="page-header">
         <h1 class="page-title">Performance Overview</h1>
-        <p class="page-subtitle">Real-time insights across all dealership operations • Last updated 5 minutes ago</p>
+        <div class="page-subtitle" style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+          <span>Real-time insights across all dealership operations • Last updated 5 minutes ago</span>
+          <span style="font-family:'Space Mono', monospace; color: #ffffff; font-size:16px; text-align:right;">
+            Card Processing Fees: <span style="color: var(--accent-red); font-weight:900;">-$82.5K</span>
+            <div style="display:flex; align-items:center; justify-content:flex-end; gap:8px; font-size:12px; font-family:'Inter', sans-serif; color: rgba(228,233,242,0.85); margin-top:4px;">
+              <span>If you’d like to lower this, email <span style="font-weight:700;">steve.k@carpay.com</span></span>
+              <button onclick="this.parentElement.style.display='none'" style="background:transparent; border:none; color: rgba(228,233,242,0.55); cursor:pointer; font-size:14px; line-height:1;">✕</button>
+            </div>
+            <!-- Optional: remove this line entirely if you don't want it always visible -->
+          </span>
+        </div>
       </div>
-
       <div class="hero-stats">
+        <div class="hero-card yellow">
+          <div class="hero-card-header">
+            <div class="hero-label">Active Portfolio</div>
+            <div class="hero-icon">📊</div>
+          </div>
+          <div class="hero-value">$14.2M</div>
+          <div class="hero-change">
+            <span class="trend-indicator up">↑ $1.1M</span>
+            <span style="color: var(--text-muted);">vs last month</span>
+          </div>
+        </div>
+
         <div class="hero-card blue">
           <div class="hero-card-header">
             <div class="hero-label">Monthly Revenue</div>
@@ -587,39 +607,27 @@
           </div>
         </div>
 
-        <div class="hero-card green">
+        <div class="hero-card red">
           <div class="hero-card-header">
-            <div class="hero-label">Collection Rate</div>
-            <div class="hero-icon">✓</div>
+            <div class="hero-label">Accounts Past Due</div>
+            <div class="hero-icon">⚠️</div>
           </div>
-          <div class="hero-value">94.2%</div>
+          <div class="hero-value">128</div>
           <div class="hero-change">
-            <span class="trend-indicator up">↑ 2.1%</span>
-            <span style="color: var(--text-muted);">vs last month</span>
+            <span class="trend-indicator neutral">$99.5K past due</span>
+            <span style="color: var(--text-muted);">balance</span>
           </div>
         </div>
 
-        <div class="hero-card yellow">
+        <div class="hero-card purple">
           <div class="hero-card-header">
-            <div class="hero-label">Active Portfolio</div>
-            <div class="hero-icon">📊</div>
+            <div class="hero-label">Monthly Vehicles Sold</div>
+            <div class="hero-icon">🚗</div>
           </div>
-          <div class="hero-value">$14.2M</div>
+          <div class="hero-value">312</div>
           <div class="hero-change">
-            <span class="trend-indicator up">↑ $1.1M</span>
+            <span class="trend-indicator up">↑ 7.1%</span>
             <span style="color: var(--text-muted);">vs last month</span>
-          </div>
-        </div>
-
-        <div class="hero-card blue">
-          <div class="hero-card-header">
-            <div class="hero-label">Days to Recover</div>
-            <div class="hero-icon">⏱️</div>
-          </div>
-          <div class="hero-value">8.4 Days</div>
-          <div class="hero-change">
-            <span class="trend-indicator up">↓ 1.2 days</span>
-            <span style="color: var(--text-muted);">improving</span>
           </div>
         </div>
 
@@ -635,31 +643,31 @@
           </div>
         </div>
 
-        <div class="hero-card purple">
+        <div class="hero-card green">
           <div class="hero-card-header">
-            <div class="hero-label">Monthly Vehicles Sold</div>
-            <div class="hero-icon">🚗</div>
+            <div class="hero-label">Collection Rate</div>
+            <div class="hero-icon">✓</div>
           </div>
-          <div class="hero-value">312 Vehicles</div>
+          <div class="hero-value">94.2%</div>
           <div class="hero-change">
-            <span class="trend-indicator up">↑ 7.1%</span>
+            <span class="trend-indicator up">↑ 2.1%</span>
             <span style="color: var(--text-muted);">vs last month</span>
           </div>
         </div>
 
-        <div class="hero-card red" title="Track card fees over time. Want to lower this? Email steve.k@carpay.com">
+        <div class="hero-card blue">
           <div class="hero-card-header">
-            <div class="hero-label">Monthly Card Processing Fees</div>
-            <div class="hero-icon">💳</div>
+            <div class="hero-label">Days to Recover</div>
+            <div class="hero-icon">⏱️</div>
           </div>
-          <div class="hero-value">-$82.5K</div>
+          <div class="hero-value">8.4 Days</div>
           <div class="hero-change">
-            <span class="trend-indicator neutral">2.34%</span>
-            <span style="color: var(--text-muted);">blended processing rate</span>
+            <span class="trend-indicator up">↓ 1.2 days</span>
+            <span style="color: var(--text-muted);">improving</span>
           </div>
-          <div class="hero-footnote">Want to lower this? Email steve.k@carpay.com</div>
         </div>
       </div>
+
 
       <div class="charts-grid">
         <div class="chart-card span-6">
@@ -690,7 +698,7 @@
             <div class="aging-bucket">
               <div class="aging-bucket-color" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">🔵</div>
               <div class="aging-bucket-info">
-                <div class="aging-bucket-label">1-7 days late</div>
+                <div class="aging-bucket-label">1-10 days late</div>
                 <div class="aging-bucket-value" style="color: #3b82f6;">$35.0K</div>
                 <div class="aging-bucket-percentage">35.2% of total delinquent</div>
               </div>
@@ -700,7 +708,7 @@
             <div class="aging-bucket">
               <div class="aging-bucket-color" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6;">🟣</div>
               <div class="aging-bucket-info">
-                <div class="aging-bucket-label">8-15 days late</div>
+                <div class="aging-bucket-label">11-30 days late</div>
                 <div class="aging-bucket-value" style="color: #8b5cf6;">$24.0K</div>
                 <div class="aging-bucket-percentage">24.1% of total delinquent</div>
               </div>
@@ -710,7 +718,7 @@
             <div class="aging-bucket">
               <div class="aging-bucket-color" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">🟡</div>
               <div class="aging-bucket-info">
-                <div class="aging-bucket-label">16-30 days late</div>
+                <div class="aging-bucket-label">31-60 days late</div>
                 <div class="aging-bucket-value" style="color: #f59e0b;">$28.0K</div>
                 <div class="aging-bucket-percentage">28.1% of total delinquent</div>
               </div>
@@ -720,17 +728,16 @@
             <div class="aging-bucket">
               <div class="aging-bucket-color" style="background: rgba(249, 115, 22, 0.15); color: #f97316;">🟠</div>
               <div class="aging-bucket-info">
-                <div class="aging-bucket-label">31-60 days late</div>
+                <div class="aging-bucket-label">61-90 days late</div>
                 <div class="aging-bucket-value" style="color: #f97316;">$7.0K</div>
                 <div class="aging-bucket-percentage">7.0% of total delinquent</div>
               </div>
               <div class="aging-bucket-trend trend-down">↓ $1K</div>
             </div>
-
-            <div class="aging-bucket">
+                        <div class="aging-bucket">
               <div class="aging-bucket-color" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;">🔴</div>
               <div class="aging-bucket-info">
-                <div class="aging-bucket-label">61+ days late</div>
+                <div class="aging-bucket-label">91+ days late</div>
                 <div class="aging-bucket-value" style="color: #ef4444;">$5.5K</div>
                 <div class="aging-bucket-percentage">5.5% of total delinquent</div>
               </div>
@@ -747,30 +754,30 @@
         <div class="ai-metrics-grid">
           <div class="ai-metric-card">
             <div class="ai-metric-icon">🤖</div>
-            <div class="ai-metric-label">AI Recovered (This Month)</div>
-            <div class="ai-metric-value" style="color: var(--accent-green);">$330K</div>
-            <div class="ai-metric-detail">68% of total recovery</div>
+            <div class="ai-metric-label">AI Recovered Accounts</div>
+            <div class="ai-metric-value" style="color: var(--accent-green);">847 Accounts</div>
+            <div style="font-size:14px; color: var(--text-secondary); margin-top:-4px;">$330K (68% of total)</div>
           </div>
 
           <div class="ai-metric-card">
             <div class="ai-metric-icon">👤</div>
-            <div class="ai-metric-label">Manual Recovered</div>
-            <div class="ai-metric-value" style="color: var(--accent-blue);">$157K</div>
-            <div class="ai-metric-detail">32% of total recovery</div>
+            <div class="ai-metric-label">Human Recovered Accounts</div>
+            <div class="ai-metric-value" style="color: var(--accent-blue);">399 Accounts</div>
+            <div style="font-size:14px; color: var(--text-secondary); margin-top:-4px;">$157K (32% of total)</div>
           </div>
 
           <div class="ai-metric-card">
             <div class="ai-metric-icon">⏱️</div>
             <div class="ai-metric-label">Collector Hours Saved</div>
-            <div class="ai-metric-value" style="color: var(--accent-purple);">142</div>
+            <div class="ai-metric-value" style="color: var(--accent-purple);">142 Hours</div>
             <div class="ai-metric-detail">This month</div>
           </div>
 
           <div class="ai-metric-card">
-            <div class="ai-metric-icon">✅</div>
-            <div class="ai-metric-label">AI-Only Resolved</div>
-            <div class="ai-metric-value" style="color: var(--accent-cyan);">847</div>
-            <div class="ai-metric-detail">Accounts recovered without human intervention</div>
+            <div class="ai-metric-icon">📉</div>
+            <div class="ai-metric-label">Delinquency Reduced</div>
+            <div class="ai-metric-value" style="color: var(--accent-cyan);">-22%</div>
+            <div class="ai-metric-detail">Past-due accounts down this month</div>
           </div>
         </div>
       </div>
